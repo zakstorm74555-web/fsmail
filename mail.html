@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox — FsMail Ecosystem</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased overflow-hidden select-none">
+
+    <header class="bg-slate-900 border-b border-slate-800/80 px-6 py-3.5 flex items-center justify-between shadow-sm relative z-10">
+        <div class="flex items-center gap-3">
+            <img src="icon.png" alt="FsMail" class="w-5 h-5 object-contain">
+            <h1 class="text-base font-bold text-slate-200 tracking-tight">FsMail</h1>
+            <span class="bg-blue-500/10 text-blue-400 text-[10px] font-mono px-2 py-0.5 border border-blue-500/20 rounded font-medium">Secure Space Terminal</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span id="user-meta" class="text-xs font-mono text-slate-400 bg-slate-950 px-3 py-1.5 border border-slate-800 rounded-md">...</span>
+            <button onclick="clearSession()" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded font-medium hover:bg-red-950/40 hover:text-red-400 transition duration-150">Disconnect</button>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden relative">
+        
+        <nav class="w-56 bg-slate-900/20 border-r border-slate-800/60 p-3 space-y-1 flex flex-col justify-between">
+            <div class="space-y-1">
+                <button onclick="window.location.href='sendmail.html'" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded text-xs font-bold tracking-wider text-white uppercase mb-4 shadow transition duration-150">
+                    Compose
+                </button>
+                <button id="btn-inbox" onclick="switchFolder('inbox')" class="w-full text-left text-xs font-medium px-3 py-2 rounded transition flex justify-between items-center bg-slate-800 text-blue-400">Inbox</button>
+                <button id="btn-allmail" onclick="switchFolder('allmail')" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">All Mail</button>
+                <button id="btn-spam" onclick="switchFolder('spam')" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">Spam</button>
+                <button id="btn-snoozed" onclick="switchFolder('snoozed')" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">Snoozed</button>
+                <button id="btn-sent" onclick="switchFolder('sent')" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">Sent</button>
+                <button id="btn-important" onclick="switchFolder('important')" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">Important</button>
+                <button id="btn-purchases" onclick="switchFolder('purchases')" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">Purchases</button>
+                <button id="btn-promotions" onclick="switchFolder('promotions')" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">Promotions</button>
+            </div>
+
+            <div class="border-t border-slate-900 pt-3 mt-auto">
+                <div class="text-[10px] font-mono text-slate-600 uppercase tracking-widest mb-1.5 px-1">FsMail Console Console</div>
+                <div id="fsmail-inline-console" class="bg-slate-950 border border-slate-900 rounded p-2 h-20 overflow-y-auto font-mono text-[9px] text-slate-400 leading-normal select-text">
+                    <p class="text-slate-600">[i] Standing by for secure pipeline tracking stream logs...</p>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-1 bg-slate-950 overflow-y-auto">
+            <div id="mail-stream" class="divide-y divide-slate-900">
+                </div>
+        </main>
+
+        <div id="toast-matrix-holder" class="absolute top-4 right-4 z-50 space-y-2 pointer-events-none max-w-sm w-full"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        window.onload = () => {
+            if (typeof fetchAndRenderMailbox === 'function') {
+                fetchAndRenderMailbox('inbox');
+            }
+        };
+        function switchFolder(folderName) {
+            document.querySelectorAll('nav button').forEach(btn => {
+                if(btn.id.startsWith('btn-')) {
+                    btn.className = "w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition";
+                }
+            });
+            const activeBtn = document.getElementById(`btn-${folderName}`);
+            if(activeBtn) activeBtn.className = "w-full text-left text-xs font-medium px-3 py-2 rounded transition flex justify-between items-center bg-slate-800 text-blue-400";
+            fetchAndRenderMailbox(folderName);
+        }
+    </script>
+</body>
+</html>
