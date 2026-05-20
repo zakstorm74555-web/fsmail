@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Preview — FsMail Ecosystem</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased overflow-hidden select-none">
+
+    <header class="bg-slate-900 border-b border-slate-800/80 px-6 py-3.5 flex items-center justify-between shadow-sm relative z-10">
+        <div class="flex items-center gap-3">
+            <img src="icon.png" alt="FsMail" class="w-5 h-5 object-contain">
+            <h1 class="text-base font-bold text-slate-200 tracking-tight">FsMail</h1>
+            <span class="bg-blue-500/10 text-blue-400 text-[10px] font-mono px-2 py-0.5 border border-blue-500/20 rounded font-medium">Message Inspector Node</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span id="user-meta" class="text-xs font-mono text-slate-400 bg-slate-950 px-3 py-1.5 border border-slate-800 rounded-md">...</span>
+            <button onclick="clearSession()" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded font-medium hover:bg-red-950/40 hover:text-red-400 transition duration-150">Disconnect</button>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden relative">
+        
+        <nav class="w-56 bg-slate-900/20 border-r border-slate-800/60 p-3 flex flex-col justify-between">
+            <div class="space-y-1">
+                <button onclick="window.location.href='mail.html'" class="w-full py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded text-xs font-medium transition duration-150 mb-4">
+                    &larr; Back to Stream
+                </button>
+                <button onclick="window.location.href='sendmail.html'" class="w-full text-left text-xs font-medium px-3 py-2 rounded text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 transition">Compose</button>
+                <button onclick="window.location.href='mail.html'" class="w-full text-left text-xs font-medium px-3 py-2 rounded bg-slate-900 text-slate-300">Mailbox View</button>
+            </div>
+
+            <div class="border-t border-slate-900 pt-3 mt-auto">
+                <div class="text-[10px] font-mono text-slate-600 uppercase tracking-widest mb-1.5 px-1">FsMail Console</div>
+                <div id="fsmail-inline-console" class="bg-slate-950 border border-slate-900 rounded p-2 h-20 overflow-y-auto font-mono text-[9px] text-slate-400 leading-normal select-text">
+                    <p class="text-slate-600">[i] Standing by for inspector track stream logs...</p>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-1 bg-slate-950 p-6 overflow-y-auto flex flex-col">
+            <div class="max-w-3xl w-full bg-slate-900/40 border border-slate-900 p-6 rounded-lg shadow-xl space-y-6 mx-auto">
+                
+                <div class="border-b border-slate-900 pb-4">
+                    <h2 id="view-subject" class="text-xl font-bold text-slate-100 tracking-tight select-text">...</h2>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded border border-slate-800/60 flex justify-between items-start text-xs font-mono">
+                    <div class="space-y-1.5">
+                        <p class="text-slate-400">
+                            <span class="text-slate-600 font-medium">From:</span> 
+                            <span id="view-from-name" class="font-bold text-slate-200">...</span> 
+                            <span id="view-from-email" class="text-blue-400 select-text">...</span>
+                        </p>
+                        <p class="text-slate-500">
+                            <span class="text-slate-600 font-medium">To:</span> 
+                            <span id="view-to" class="select-text">...</span>
+                        </p>
+                    </div>
+                    <div id="view-meta-time" class="text-slate-500 font-medium">...</div>
+                </div>
+
+                <div id="view-body" class="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed min-h-[14rem] font-sans border border-slate-900/60 p-4 rounded bg-slate-950/20 select-text">
+                    ...
+                </div>
+
+                <div class="border-t border-slate-900 pt-4">
+                    <button onclick="initReplyRoute()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition duration-150 shadow shadow-blue-600/10">
+                        Reply Message
+                    </button>
+                </div>
+
+            </div>
+        </main>
+
+        <div id="toast-matrix-holder" class="absolute top-4 right-4 z-50 space-y-2 pointer-events-none max-w-sm w-full"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        window.onload = () => {
+            if (typeof inspectMailPayload === 'function') {
+                inspectMailPayload();
+                // Custom log output mapping straight into website terminal
+                if (typeof printFsLog === 'function') {
+                    printFsLog("Message packet payload parsed and decrypted safely.", "success");
+                }
+            }
+        };
+    </script>
+</body>
+</html>
