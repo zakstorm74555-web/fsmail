@@ -32,7 +32,7 @@ function printFsLog(message, type = 'info') {
     // Spawn Self-Destructive UI Toast Messages at Top-Right
     if (toastHolder) {
         const toast = document.createElement('div');
-        toast.className = "pointer-events-auto bg-slate-900 border border-slate-800 p-3 rounded shadow-2xl flex items-center justify-between gap-4 text-xs font-medium border-l-4 transition-all duration-300 transform translate-y-2 opacity-0";
+        toast.className = "pointer-events-auto bg-slate-900/90 backdrop-blur-md border border-slate-800 p-4 rounded-xl shadow-2xl flex items-center justify-between gap-4 text-xs font-medium border-l-4 transition-all duration-300 transform translate-y-2 opacity-0";
         
         if (type === 'error') toast.classList.add('border-l-red-500');
         else if (type === 'success') toast.classList.add('border-l-emerald-500');
@@ -41,7 +41,7 @@ function printFsLog(message, type = 'info') {
 
         toast.innerHTML = `
             <div class="text-slate-200 font-sans">${message}</div>
-            <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-slate-300 font-mono text-[10px]">&times;</button>
+            <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-slate-300 font-mono text-sm">&times;</button>
         `;
 
         toastHolder.appendChild(toast);
@@ -90,10 +90,30 @@ function triggerHackerLoading() {
                 loaderModule.classList.add('hidden');
                 loginNode.classList.remove('hidden');
                 setTimeout(() => { loginNode.classList.remove('opacity-0'); }, 50);
-                printFsLog("Secure entry interface deployed successfully.", "info");
+                
+                // Direct session auto-routing loop right after loading finishes
+                const activeUser = localStorage.getItem('fs_session_user');
+                if (activeUser && activeUser.includes('@')) {
+                    printFsLog(`Active session detected for: ${activeUser}. Routing to workspace...`, "success");
+                    setTimeout(() => { window.location.href = "mail.html"; }, 800);
+                } else {
+                    printFsLog("Secure entry interface deployed successfully.", "info");
+                }
             }, 500);
         }
     }, 400);
+}
+
+function toggleAuth(view) {
+    if(view === 'signup') {
+        document.getElementById('login-node').classList.add('hidden');
+        document.getElementById('signup-node').classList.remove('hidden');
+        document.getElementById('signup-node').classList.remove('opacity-0');
+    } else {
+        document.getElementById('signup-node').classList.add('hidden');
+        document.getElementById('login-node').classList.remove('hidden');
+        document.getElementById('login-node').classList.remove('opacity-0');
+    }
 }
 
 // 🎯 3. PERSISTENT SYSTEM RETRIEVAL LAYER (index.html)
@@ -119,7 +139,7 @@ async function handleAuthAction(e, type) {
     if (type === 'signup') {
         const username = document.getElementById('su-username').value.trim().toLowerCase();
         const pass = document.getElementById('su-password').value;
-        const targetEmail = `${username}@fatahshaheen.duckdns.org`;
+        const targetEmail = `${username}@fsmail.duckdns.org`; // Fixed to exact domain anchor matching layouts
 
         printFsLog(`Dispatching allocation command parameters for handle: ${targetEmail}`, "info");
 
@@ -137,7 +157,6 @@ async function handleAuthAction(e, type) {
                 printFsLog("Identity token generated cleanly inside DB cluster. Onboarding mail pushed.", "success");
                 toggleAuth('login');
             } else {
-                // Catches Username Already Taken and outputs cleanly to custom web console box
                 printFsLog(`Registry Rejected: ${data.message}`, "error");
             }
         } catch (err) {
@@ -164,7 +183,7 @@ async function handleAuthAction(e, type) {
             if(data.success) {
                 printFsLog("Authentication valid. Mapping central operational workspace...", "success");
                 localStorage.setItem('fs_session_user', email);
-                window.location.href = "mail.html";
+                setTimeout(() => { window.location.href = "mail.html"; }, 500);
             } else {
                 printFsLog(`Access Blocked: ${data.message}`, "error");
             }
@@ -205,30 +224,29 @@ async function fetchAndRenderMailbox(targetFolder = 'inbox') {
 
         filtered.forEach(mail => {
             const item = document.createElement('div');
-            item.className = "flex items-center justify-between p-3.5 border-b border-slate-900 hover:bg-slate-900/40 cursor-pointer transition text-sm select-none";
+            item.className = "flex items-center justify-between p-4.5 border-b border-slate-900 hover:bg-slate-900/30 cursor-pointer transition text-sm select-none group";
             
-            // Redirects straight to seemail.html on user tap activation
+            // Fixed direct link mapping routing execution pointer straight to seemail.html layout view
             item.onclick = () => {
                 localStorage.setItem('fs_active_mail_packet', JSON.stringify(mail));
                 window.location.href = "seemail.html";
             };
 
-            // Generate Professional Initials Placeholder Icon matching clean corporate UI spec
             const firstChar = mail.from_name ? mail.from_name.charAt(0).toUpperCase() : 'U';
             
             item.innerHTML = `
-                <div class="flex items-center gap-4 truncate w-11/12">
-                    <div class="w-7 h-7 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold font-mono tracking-tight shrink-0">
+                <div class="flex items-center gap-5 truncate w-11/12">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600/10 to-cyan-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold font-mono tracking-tight shrink-0 group-hover:from-blue-600 group-hover:to-cyan-500 group-hover:text-white group-hover:border-transparent transition-all duration-200">
                         ${firstChar}
                     </div>
-                    <div class="w-44 font-semibold text-slate-300 truncate">${mail.from_name}</div>
+                    <div class="w-48 font-semibold text-slate-200 truncate">${mail.from_name}</div>
                     <div class="truncate flex items-center gap-2">
-                        <span class="text-slate-200 font-medium">${mail.subject}</span>
+                        <span class="text-slate-100 font-medium">${mail.subject}</span>
                         <span class="text-slate-600">—</span>
                         <span class="text-slate-500 truncate">${mail.body}</span>
                     </div>
                 </div>
-                <div class="text-[11px] font-mono text-slate-500 whitespace-nowrap">${mail.time}</div>
+                <div class="text-[11px] font-mono text-slate-500 group-hover:text-slate-400 transition whitespace-nowrap">${mail.time}</div>
             `;
             stream.appendChild(item);
         });
@@ -255,11 +273,13 @@ function inspectMailPayload() {
     document.getElementById('view-meta-time').innerText = mail.time;
     document.getElementById('view-body').innerText = mail.body;
 
-    // Render Dynamic Profile Initial Badge into seemail.html layout view
+    // Render Polished Dynamic Profile Initial Badge into seemail.html layout view
     const initialBadge = document.getElementById('view-profile-badge');
     if (initialBadge) {
         initialBadge.innerText = mail.from_name ? mail.from_name.charAt(0).toUpperCase() : 'U';
     }
+    
+    printFsLog("Payload mapping complete. Message structure authenticated.", "success");
 
     localStorage.setItem('fs_reply_email', mail.from_email);
     localStorage.setItem('fs_reply_subject', mail.subject);
@@ -285,7 +305,6 @@ async function executeOutboundTransmission(e) {
     const body = document.getElementById('field-body').value.trim();
     const currentUser = localStorage.getItem('fs_session_user');
 
-    // Simple pattern tracking validator
     if (!to.includes('@')) {
         printFsLog("Transmission aborted: Intended recipient string lacks domain coordinates mapping.", "error");
         return;
