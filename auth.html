@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity Verification — FatahShaheen Mail</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex items-center justify-center p-4 antialiased select-none">
+
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-xl shadow-2xl relative overflow-hidden">
+        
+        <div id="loader-module" class="space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 class="text-xs font-mono text-blue-500 uppercase tracking-widest">Core Handshake Initialization</h2>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </div>
+            
+            <div id="terminal-log" class="bg-slate-950 border border-slate-800/80 rounded-lg p-4 h-44 overflow-y-auto font-mono text-[11px] leading-relaxed text-slate-400">
+                <p class="text-slate-600">[!] Awaiting matrix pipeline execution trigger...</p>
+            </div>
+
+            <div class="w-full bg-slate-950 h-1 rounded-full overflow-hidden border border-slate-900">
+                <div id="progress-bar" class="bg-blue-500 h-full w-0 transition-all duration-500 ease-out"></div>
+            </div>
+        </div>
+
+        <div id="login-node" class="hidden opacity-0 transition-opacity duration-300">
+            <div class="text-center space-y-1.5 mb-6">
+                <h2 class="text-lg font-bold text-slate-200 tracking-tight">Sign in to FatahShaheen Mail</h2>
+                <p class="text-xs text-slate-500 font-mono uppercase tracking-wider">Verification Key Required</p>
+            </div>
+
+            <form class="space-y-4 text-sm" onsubmit="handleAuthAction(event, 'login')">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wide">Sovereign Email Handle</label>
+                    <input type="email" id="lg-email" value="ghost@fatahshaheen.duckdns.org" class="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-white font-mono mt-1.5 focus:outline-none focus:border-blue-500 transition" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wide">Access Encryption Passkey</label>
+                    <input type="password" id="lg-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-white font-mono mt-1.5 focus:outline-none focus:border-blue-500 transition" required>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded text-xs tracking-wider uppercase transition shadow-md shadow-blue-600/10">
+                    Verify Signature
+                </button>
+            </form>
+            <p class="text-xs text-slate-500 mt-5 text-center font-sans">
+                New network agent? <span onclick="toggleAuth('signup')" class="text-blue-400 cursor-pointer hover:underline font-medium">Provision new identity node</span>
+            </p>
+        </div>
+
+        <div id="signup-node" class="hidden opacity-0 transition-opacity duration-300">
+            <div class="text-center space-y-1.5 mb-6">
+                <h2 class="text-lg font-bold text-slate-200 tracking-tight">Allocate New Mail Identity</h2>
+                <p class="text-xs text-slate-500 font-mono uppercase tracking-wider">Generate Link Coordinates</p>
+            </div>
+
+            <form class="space-y-4 text-sm" onsubmit="handleAuthAction(event, 'signup')">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wide">Desired Node Pointer</label>
+                    <div class="flex items-center mt-1.5 bg-slate-950 border border-slate-800 rounded overflow-hidden focus-within:border-blue-500 transition">
+                        <input type="text" id="su-username" placeholder="username" class="w-full bg-transparent p-2.5 text-white font-mono text-xs focus:outline-none" required>
+                        <span class="text-xs font-mono text-slate-500 pr-3 select-none">@fatahshaheen.duckdns.org</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wide">Master Node Password</label>
+                    <input type="password" id="su-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-white font-mono mt-1.5 focus:outline-none focus:border-blue-500 transition" required>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded text-xs tracking-wider uppercase transition shadow-md shadow-emerald-600/10">
+                    Generate Secured Token
+                </button>
+            </form>
+            <p class="text-xs text-slate-500 mt-5 text-center font-sans">
+                Already registered pointer? <span onclick="toggleAuth('login')" class="text-blue-400 cursor-pointer hover:underline font-medium">Return to authentication</span>
+            </p>
+        </div>
+
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Automatic runtime trigger for hacker loader simulation as soon as auth.html executes
+        window.onload = function() {
+            if (typeof triggerHackerLoading === 'function') {
+                triggerHackerLoading();
+            } else {
+                console.error("[FatahShaheen Core] Critical error: triggerHackerLoading system function mapping failed in main.js.");
+            }
+        };
+    </script>
+</body>
+</html>
